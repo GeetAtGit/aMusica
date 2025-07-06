@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@layer utilities {
+  @keyframes marquee {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 4s linear infinite;
+  }
+}
+
+main {
+  padding-top: 64px; /* If header height is 64px */
+}
+
+@layer utilities {
+  @keyframes equalize {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.3); }
+  }
+
+  .equalizer-bar {
+    display: inline-block;
+    width: 3px;
+    margin: 0 1px;
+    background-color: #22c55e; /* green-500 */
+    animation: equalize 1s ease-in-out infinite;
+  }
+
+  .bar1 { animation-delay: 0s; }
+  .bar2 { animation-delay: 0.2s; }
+  .bar3 { animation-delay: 0.4s; }
+}
+
+
+
