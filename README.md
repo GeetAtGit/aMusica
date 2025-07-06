@@ -1,12 +1,38 @@
-# React + Vite
+# 🎧 aMusica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**aMusica** is a sleek, Spotify-inspired music player UI built with React and TailwindCSS. It fetches real-time music data using public APIs and features dynamic playback, favorites, and a responsive player bar.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- 🎵 Playlist and track browsing (via music API)
+- ⏯️ Play, pause, skip, shuffle, and repeat controls
+- 💖 Favorite/unfavorite tracks
+- 📱 Mobile-friendly layout
+- 💫 Marquee scrolling track titles
+- 🔊 Volume control and progress bar
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠 Tech Stack
+
+- **React** – Component-based UI
+- **Tailwind CSS** – Utility-first styling
+- **React Icons** – Music player icons
+- **Context API** – Global state management
+- **Deezer API** – Real-time track and playlist data
+
+---
+
+## 🖼 Demo
+ coming soon...
+
+---
+
+## 🚀 Getting Started
+
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/gitatgeet/aMusica.git
+   cd aMusica
