@@ -6,11 +6,10 @@
 
 ## ✨ Features
 
-- 🎵 Playlist and track browsing (via music API)
+- 🎵 Playlist and track browsing (via Deezer API)
 - ⏯️ Play, pause, skip, shuffle, and repeat controls
 - 💖 Favorite/unfavorite tracks
 - 📱 Mobile-friendly layout
-- 💫 Marquee scrolling track titles
 - 🔊 Volume control and progress bar
 
 ---
