@@ -1,6 +1,6 @@
 [build]
   command   = "npm run build"
-  publish   = "build"         # or "dist" if you’re using Vite
+  publish   = "dist"         # or "dist" if you’re using Vite
 
 [functions]
   directory = "netlify/functions"
@@ -17,4 +17,3 @@
   to      = "/index.html"
   status  = 200
 
-  
