@@ -1,37 +1,43 @@
 # 🎧 aMusica
 
-**aMusica** is a sleek, Spotify-inspired music player UI built with React and TailwindCSS. It fetches real-time music data using public APIs and features dynamic playback, favorites, and a responsive player bar.
+**aMusica** is a sleek, Spotify-inspired music player UI built with **React** and **TailwindCSS**. It fetches real-time music data using the **Deezer API**, enables interactive playback, and includes search, favorites, and playlist browsing — all seamlessly deployed on **Netlify** using **Netlify Proxy Functions** for smooth backend integration.
 
 ---
 
 ## ✨ Features
 
-- 🎵 Playlist and track browsing (via Deezer API)
-- ⏯️ Play, pause, skip, shuffle, and repeat controls
-- 💖 Favorite/unfavorite tracks
-- 📱 Mobile-friendly layout
+- 🎵 Browse curated playlists via Deezer API
+- 🔍 **Search** for songs and playlists in real-time
+- 🕑 **Recently Played** carousel for quick access
+- 💖 **Add to Favorites** to build your personal playlist (stored in local storage)
+- 📚 **More Playlists** to explore a wider range of genres
+- ⏯️ Full player controls: play, pause, skip, shuffle, repeat
 - 🔊 Volume control and progress bar
+- 📱 Mobile-responsive layout for any device
 
 ---
 
 ## 🛠 Tech Stack
 
-- **React** – Component-based UI
-- **Tailwind CSS** – Utility-first styling
-- **React Icons** – Music player icons
-- **Context API** – Global state management
-- **Deezer API** – Real-time track and playlist data
+- **React** – Component-based architecture
+- **Tailwind CSS** – Utility-first CSS framework
+- **React Icons** – Iconography for the music player UI
+- **Context API** – Global state for playback and favorites
+- **Deezer API** – Real-time music and playlist data
+- **Netlify** – Hosting, CI/CD, and serverless functions
+- **Netlify Proxy Functions** – Seamless API routing to bypass CORS limitations
 
 ---
 
 ## 🖼 Demo
- coming soon...
+
+🌐 Live on Netlify: [aMusica](https://amusica.netlify.app) *(Replace with your actual link)*
 
 ---
 
 ## 🚀 Getting Started
 
-1. **Clone the repo**
-   ```bash
-   git clone https://github.com/gitatgeet/aMusica.git
-   cd aMusica
+### 1. Clone the repository
+```bash
+git clone https://github.com/gitatgeet/aMusica.git
+cd aMusica
