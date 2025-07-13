@@ -1,151 +1,70 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { FaSearch } from "react-icons/fa";
+import { getTrendingTracks } from "../api/musicApi"; // We need this to get the song list
 import TrackCard from "../components/TrackCard";
-
-const corsProxy = "/.netlify/functions/deezer?url=";
 
 function Search() {
   const [query, setQuery] = useState("");
-  const [tracks, setTracks] = useState([]);
-  const [genres, setGenres] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState("");
-  const [message, setMessage] = useState("");
+  const [allTracks, setAllTracks] = useState([]); // To store all trending tracks
+  const [filteredResults, setFilteredResults] = useState([]); // To store the filtered results
+  const [loading, setLoading] = useState(true);
 
-  // Load genres once
+  // 1. Fetch all trending tracks when the page loads
   useEffect(() => {
-    axios
-      .get(`${corsProxy}${encodeURIComponent("https://api.deezer.com/genre")}`)
-      .then(res => {
-        setGenres(res.data.data || []);
+    getTrendingTracks(100) // Get a large list to search from
+      .then((data) => {
+        setAllTracks(data);
+        setLoading(false);
       })
-      .catch(err => {
-        console.error("Failed to load genres:", err);
-        setMessage("❌ Could not load genres.");
+      .catch((err) => {
+        console.error("Failed to fetch tracks for search:", err);
+        setLoading(false);
       });
-  }, []);
+  }, []); // The empty array [] means this runs only once
 
-  // Search handler
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!query.trim()) return setMessage("Please enter a search term.");
-
-    setMessage("Searching…");
-    try {
-      const res = await axios.get(
-        `${corsProxy}${encodeURIComponent(`https://api.deezer.com/search?q=${query}`)}`
-      );
-      const list = res.data.data || [];
-      setTracks(list);
-      setMessage(list.length ? "" : "No tracks found for your search.");
-    } catch (err) {
-      console.error("Search error:", err);
-      setMessage("❌ Error while searching.");
+  // 2. Filter the tracks whenever the user types in the search bar
+  useEffect(() => {
+    if (query.trim() === "") {
+      setFilteredResults([]); // If search bar is empty, show no results
+      return;
     }
-  };
 
-  // Genre handler
-  const handleGenreSelect = async (e) => {
-    const genreId = e.target.value;
-    setSelectedGenre(genreId);
-    setTracks([]);
-    setMessage("");
+    const results = allTracks.filter(track =>
+      track.title.toLowerCase().includes(query.toLowerCase()) ||
+      track.artist?.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredResults(results);
 
-    if (!genreId) return;
-
-    setMessage("Loading tracks…");
-    try {
-      const artistRes = await axios.get(
-        `${corsProxy}${encodeURIComponent(`https://api.deezer.com/genre/${genreId}/artists`)}`
-      );
-      const artistId = artistRes.data.data?.[0]?.id;
-      if (!artistId) return setMessage("No artist found for this genre.");
-
-      const trackRes = await axios.get(
-        `${corsProxy}${encodeURIComponent(`https://api.deezer.com/artist/${artistId}/top?limit=25`)}`
-      );
-      const list = trackRes.data.data || [];
-      setTracks(list);
-      setMessage(list.length ? "" : "No top tracks found.");
-    } catch (err) {
-      console.error("Genre selection error:", err);
-      setMessage("❌ Error loading genre tracks.");
-    }
-  };
+  }, [query, allTracks]); // Re-run the filter when the query or the track list changes
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold text-white mb-6">🔍 Search & Browse Music</h1>
-
-      <div className="flex flex-col md:flex-row gap-6 mb-8">
-        {/* Genre */}
-        <div className="bg-zinc-800 p-5 rounded-xl shadow flex-1">
-          <label htmlFor="genre" className="block mb-2 text-white text-lg font-semibold">
-            🎧 Browse by Genre
-          </label>
-          <select
-            id="genre"
-            value={selectedGenre}
-            onChange={handleGenreSelect}
-            className="w-full px-4 py-2 rounded-md text-white bg-zinc-700 focus:outline-none"
-          >
-            <option value="">Select Genre</option>
-            {genres.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Search */}
-        <div className="bg-zinc-800 p-5 rounded-xl shadow flex-1">
-          <form onSubmit={handleSearch} className="space-y-3">
-            <label className="block text-white text-lg font-semibold">
-              🔎 Search by Track or Artist
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="e.g. Coldplay, Shape of You"
-                className="flex-1 px-4 py-2 rounded-md text-white bg-zinc-700 focus:outline-none"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              {/* 👇 Add this button so form actually submits */}
-              <button
-                type="submit"
-                className="px-4 py-2 bg-indigo-600 rounded-md text-white hover:bg-indigo-500"
-              >
-                Search
-              </button>
-              {/* Optional: clear */}
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("");
-                  setTracks([]);
-                  setMessage("");
-                }}
-                className="px-4 py-2 bg-gray-600 rounded-md text-white hover:bg-gray-500"
-              >
-                Clear
-              </button>
-            </div>
-          </form>
-        </div>
+    <div className="px-4">
+      {/* Search Bar */}
+      <div className="flex items-center gap-4 bg-zinc-800 p-2 rounded-lg mb-8 mt-10">
+        <FaSearch className="text-zinc-400" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search within trending songs..."
+          className="bg-transparent text-white placeholder-zinc-400 w-full focus:outline-none"
+        />
       </div>
 
-      {/* Feedback or error */}
-      {message && <p className="text-red-400 text-center mb-6">{message}</p>}
+      {/* Results */}
+      <div>
+        {loading && <p className="text-center text-zinc-400">Loading song list...</p>}
+        
+        {!loading && query && filteredResults.length === 0 && (
+          <p className="text-center text-zinc-400">No results found for "{query}".</p>
+        )}
 
-      {/* Results grid */}
-      {tracks.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
-          {tracks.map((track) => (
-            <TrackCard key={track.id} track={track} trackList={tracks} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {filteredResults.map((track) => (
+            <TrackCard key={track.id} track={track} trackList={filteredResults} />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -1,19 +1,18 @@
+# netlify.toml
+
 [build]
-  command   = "npm run build"
-  publish   = "dist"         # or "dist" if you’re using Vite
+  # This command builds your React app for production
+  command = "npm run build"
 
-[functions]
-  directory = "netlify/functions"
+  # This is the folder where the build output is placed (usually "dist" or "build")
+  publish = "dist"
 
+  # This tells Netlify where to find your serverless functions
+  functions = "netlify/functions/"
+
+# This rule is important for Single-Page Apps like React
+# It ensures that all paths are handled by your index.html
 [[redirects]]
-  # Proxy function calls first
-  from    = "/.netlify/functions/*"
-  to      = "/.netlify/functions/:splat"
-  status  = 200
-
-[[redirects]]
-  # Then catch-all for your SPA
-  from    = "/*"
-  to      = "/index.html"
-  status  = 200
-
+  from = "/*"
+  to = "/index.html"
+  status = 200

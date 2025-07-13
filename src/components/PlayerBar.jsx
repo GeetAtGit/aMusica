@@ -50,6 +50,7 @@ function formatTime(time) {
 
 function PlayerBar() {
   const {
+    audioRef,
     currentTrack,
     isPlaying,
     togglePlay,
@@ -63,7 +64,6 @@ function PlayerBar() {
     toggleShuffle,
   } = usePlayer();
 
-  const audioRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(1);
   const [currentTime, setCurrentTime] = useState(0);
@@ -74,22 +74,31 @@ function PlayerBar() {
     if (!audio || !currentTrack?.preview) return;
 
     audio.src = currentTrack.preview;
+
+    const handleLoaded = () => {
+      if (isPlaying) {
+        audio.play().catch((err) => {
+          console.warn("Autoplay failed:", err);
+        });
+      }
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoaded);
     audio.load();
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.warn("Autoplay failed:", err);
-      });
-    }
-  }, [currentTrack]);
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoaded);
+    };
+  }, [currentTrack?.id,  isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
-      audio.play().catch((err) => console.warn("Play failed:", err));
+      audio.play().catch((err) => {
+        console.warn("Play failed:", err);
+      });
     } else {
       audio.pause();
     }
@@ -113,12 +122,9 @@ function PlayerBar() {
 
     audio.addEventListener("timeupdate", updateProgress);
     audio.addEventListener("loadedmetadata", updateProgress);
-    audio.addEventListener("ended", playNext);
-
     return () => {
       audio.removeEventListener("timeupdate", updateProgress);
       audio.removeEventListener("loadedmetadata", updateProgress);
-      audio.removeEventListener("ended", playNext);
     };
   }, [currentTrack]);
 
@@ -140,36 +146,34 @@ function PlayerBar() {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 border-t border-zinc-700/60 z-50">
       {/* Main Layout */}
-      
       <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between px-4 pt-2 gap-4">
-<div className="flex justify-between items-center w-full sm:w-[30%] gap-3">
-  {/* Track Info */}
-<div className="flex items-center gap-3 w-full sm:w-[30%]">
-  <img
-    src={currentTrack.album?.cover_small}
-    alt="cover"
-    className="w-10 h-10 sm:w-12 sm:h-12 rounded-md object-cover"
-  />
-  <div >
-    <MarqueeText>{currentTrack.title}</MarqueeText>
-    <p className=" text-sm text-zinc-400 truncate">{currentTrack.artist.name}</p>
-  </div>
-</div>
+        <div className="flex justify-between items-center w-full sm:w-[30%] gap-3">
+          {/* Track Info */}
+          <div className="flex items-center gap-3 w-full sm:w-[30%]">
+            <img
+              src={currentTrack.album?.cover_small}
+              alt="cover"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-md object-cover"
+            />
+            <div>
+              <MarqueeText>{currentTrack.title}</MarqueeText>
+              <p className="text-sm text-zinc-400 truncate">{currentTrack.artist.name}</p>
+            </div>
+          </div>
 
+          {/* Volume + Favorite (mobile only) */}
+          <div className="flex items-center gap-2 text-white sm:hidden">
+            <button
+              onClick={() => toggleFavorite(currentTrack)}
+              title="Toggle Favorite"
+              className="text-red-500 text-xl"
+            >
+              {isFavorite(currentTrack) ? <FaHeart /> : <FaRegHeart />}
+            </button>
+          </div>
+        </div>
 
-  {/* Volume + Favorite (mobile only) */}
-  <div className="flex items-center gap-2 text-white sm:hidden">
-    <button
-      onClick={() => toggleFavorite(currentTrack)}
-      title="Toggle Favorite"
-      className="text-red-500 text-xl"
-    >
-      {isFavorite(currentTrack) ? <FaHeart /> : <FaRegHeart />}
-    </button>
-  </div>
-</div>
-
-        {/* Controls - Centered */}
+        {/* Controls */}
         <div className="w-full sm:w-[40%] flex justify-center">
           <div className="flex items-center gap-5 text-xl text-white">
             <button onClick={toggleRepeat} title="Repeat">
@@ -195,33 +199,30 @@ function PlayerBar() {
         </div>
 
         {/* Volume + Favorite */}
-<div className="hidden sm:flex w-full sm:w-[30%] flex-row justify-end items-center gap-4">
-  {/* Volume Bar */}
-  <div className="flex items-center gap-2 text-white">
-    <FaVolumeUp />
-    <input
-      type="range"
-      min="0"
-      max="1"
-      step="0.01"
-      value={volume}
-      onChange={(e) => setVolume(parseFloat(e.target.value))}
-      className="w-32 sm:w-24 accent-green-500"
-    />
-  </div>
-
-  {/* Favorite Button */}
-  <button
-    onClick={() => toggleFavorite(currentTrack)}
-    title="Toggle Favorite"
-    className="text-red-500 text-xl"
-  >
-    {isFavorite(currentTrack) ? <FaHeart /> : <FaRegHeart />}
-  </button>
-</div>
+        <div className="hidden sm:flex w-full sm:w-[30%] flex-row justify-end items-center gap-4">
+          <div className="flex items-center gap-2 text-white">
+            <FaVolumeUp />
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="w-32 sm:w-24 accent-green-500"
+            />
+          </div>
+          <button
+            onClick={() => toggleFavorite(currentTrack)}
+            title="Toggle Favorite"
+            className="text-red-500 text-xl"
+          >
+            {isFavorite(currentTrack) ? <FaHeart /> : <FaRegHeart />}
+          </button>
+        </div>
       </div>
 
-      {/* Progress Bar at bottom always */}
+      {/* Progress */}
       <div className="w-full flex items-center justify-center gap-2 sm:gap-4 text-sm text-zinc-300 px-4 pb-2">
         <span className="w-10 text-right">{formatTime(currentTime)}</span>
         <input
@@ -238,8 +239,8 @@ function PlayerBar() {
       {/* Audio Element */}
       <audio
         ref={audioRef}
-        key={currentTrack?.id}
-        src={currentTrack.preview}
+        src={currentTrack?.preview}
+        autoPlay={isPlaying}
         preload="auto"
       />
     </div>

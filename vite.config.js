@@ -8,4 +8,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    port: 5173, // Or whatever port your frontend runs on
+    proxy: {
+      '/api': 'http://localhost:5000', // <-- THIS IS THE VITE PROXY CONFIG
+    }
+  }
 })
