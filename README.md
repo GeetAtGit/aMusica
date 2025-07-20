@@ -31,7 +31,7 @@
 
 ## 🖼 Demo
 
-🌐 Live on Netlify: [aMusica](https://amusica.netlify.app) *(Replace with your actual link)*
+🌐 Live on Netlify: [aMusica](https://amusica.netlify.app) 
 
 ---
 
